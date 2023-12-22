@@ -5,8 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faPencil, faCheck, faSortUp, faSortDown} from "@fortawesome/free-solid-svg-icons";
 import { useTranslation} from "react-i18next";
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
+import store from "../store/store";
+// import store from "../store/customStore";
+import * as actions from "../store/actionTypes";
+import {Observable} from "@reduxjs/toolkit";
 
 export function Table() {
+    // const store = configureStore();
+    // console.log('store', store);
     const [locationsPerPage, setLocationsPerPage] = useState(new Array<any>());
     const [editableArr, setEditableArr] = useState(new Array<any>());
     const [pages, setPages] = useState(new Array<any>());
@@ -18,6 +24,9 @@ export function Table() {
     const { t, i18n } = useTranslation();
     let [isIncorrectLatitude, setIsIncorrectLatitude] = useState<{[index: number]: boolean}>({0: false});
     let [isIncorrectLongitude, setIsIncorrectLongitude] = useState<{[index: number]: boolean}>({0: false});
+    const unsubscribe = store.subscribe(() => {
+        console.log('store changed', store.getState())
+    });
     useEffect(() => {
         /** Version for non-local response */
         // getLocations()
@@ -39,6 +48,7 @@ export function Table() {
         if (!!getLocalData().length) {
             setData(getLocalData());
         }
+        unsubscribe();
     }, []);
     function getLocalData(): Array<any> {
         const locations = localStorage.getItem('locations');
@@ -78,22 +88,41 @@ export function Table() {
         setLocalLocations(prevArr);
     }
     function addNewItem() {
-        localLocations.push({coordinates: [0,0], name: '', key: localLocations.length});
-        editableArr.push(false);
+        store.dispatch({
+            type: actions.LOCATION_ADD,
+            payload: {
+                localLocations,
+                editableArr
+            }
+        });
         setIsNewItemAdded(true);
         editData(localLocations.length - 1, true);
+        unsubscribe();
     }
     function removeNewItem() {
-        let arr = localLocations.splice(localLocations.length - 1, 1);
+        store.dispatch({
+            type: actions.LOCATION_DELETE,
+            payload: {
+                localLocations
+            }
+        });
         setIsNewItemAdded(false);
+        unsubscribe();
     }
     function editData(index: number, isEdit: boolean) {
         const prevArr = [...editableArr];
         prevArr[index] = isEdit;
         setEditableArr(prevArr);
+        store.dispatch({
+            type: actions.LOCATION_EDIT,
+            payload: {
+                isEdit: isEdit,
+                localLocations: localLocations
+            }
+        });
         if (!isEdit) {
-            localStorage.setItem('locations', JSON.stringify(localLocations));
             calculatePagination(localLocations);
+            unsubscribe();
         }
     }
     function calculatePagination(localLocations: Array<any>) {
@@ -114,19 +143,18 @@ export function Table() {
         }
     }
     function sort(order: 'ASC'|'DSC') {
-        localLocations.sort(function (a, b) {
-            if (a.name < b.name) {
-                return order === 'ASC' ? -1 : 1;
+        store.dispatch({
+            type: actions.LOCATION_SORT,
+            payload: {
+                localLocations,
+                order
             }
-            if (a.name > b.name) {
-                return order === 'ASC' ? 1 : -1;
-            }
-            return 0;
         });
         const currentOrder = order === 'ASC' ? 'DSC' : 'ASC';
         setLocalLocations(localLocations);
         getPageResult(page);
         setOrder(currentOrder);
+        unsubscribe();
     }
     function itemsOnPage(e: any) {
         itemsPerPage = e.target.value;
