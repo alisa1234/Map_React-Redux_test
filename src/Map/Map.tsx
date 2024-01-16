@@ -3,7 +3,7 @@ import './map.scss';
 // @ts-ignore
 import GoogleMapReact from "google-map-react";
 import Marker from "./Marker";
-import {getLocations, getLocationsLocal} from "../services/location-service";
+import {getLocationsLocal} from "../services/location-service";
 import {useTranslation} from "react-i18next";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faXmark} from "@fortawesome/free-solid-svg-icons";
@@ -45,7 +45,7 @@ export function Map() {
         <div className={!showInfo ? 'map-wrapper' : 'map-wrapper map-wrapper-less-width'}>
             <div style={{height: '50vh', width: '100%'}}>
             <GoogleMapReact
-                bootstrapURLKeys={{key: ""}}
+                bootstrapURLKeys={{key: "AIzaSyCmspdTQdq_MaMOg9kfZmQIviXdNWekbdk"}}
                 defaultCenter={defaultProps.center}
                 defaultZoom={defaultProps.zoom}
             >

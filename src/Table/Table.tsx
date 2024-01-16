@@ -1,18 +1,14 @@
 import './table.scss'
 import {useEffect, useState} from "react";
-import {getLocations, getLocationsLocal} from "../services/location-service";
+import {getLocationsLocal} from "../services/location-service";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faPencil, faCheck, faSortUp, faSortDown} from "@fortawesome/free-solid-svg-icons";
 import { useTranslation} from "react-i18next";
 import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
 import store from "../store/store";
-// import store from "../store/customStore";
 import * as actions from "../store/actionTypes";
-import {Observable} from "@reduxjs/toolkit";
 
 export function Table() {
-    // const store = configureStore();
-    // console.log('store', store);
     const [locationsPerPage, setLocationsPerPage] = useState(new Array<any>());
     const [editableArr, setEditableArr] = useState(new Array<any>());
     const [pages, setPages] = useState(new Array<any>());
