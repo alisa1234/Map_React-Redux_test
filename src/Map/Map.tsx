@@ -65,7 +65,7 @@ export function Map() {
                 }
             </GoogleMapReact>
         </div>
-            <div className={'location-info-wrapper'} style={{width: showInfo ? '400px' : '0'}}>
+            <div className={'location-info-wrapper'} data-testid={'location-info-wrapper'} style={{width: showInfo ? '400px' : '0'}}>
                 <div className={'location-info'}>
                     <h2>{locationInfo.name}</h2>
                     <div>{t('lat')}: {locationInfo.coordinates[0]}</div>

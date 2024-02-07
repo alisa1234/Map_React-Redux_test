@@ -4,10 +4,11 @@ export function Marker({text, onClick, isShowText}: any) {
                 <div className={'marker-wrapper'}>
                     <div
                         className={'pin2'}
+                        data-testid={'marker-btn'}
                         onClick={onClick}
                     >
                         {isShowText ?
-                            <div className={'marker-text'}>{text}</div>
+                            <div className={'marker-text'} data-testid={'marker-test'}>{text}</div>
                             : <div></div>}
                     </div>
 

@@ -1,25 +1,37 @@
-import React from 'react';
+import React, {useEffect, useState} from "react";
 import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Header from "./Header/Header";
+import Map from "./Map/Map";
+import {getLocationsLocal} from "./services/location-service";
+import Table from "./Table/Table";
 
 function App() {
+  const [data, setData] = useState(new Array<any>());
+  useEffect(() => {
+    if (!getLocalData().length) {
+      getLocationsLocal()
+              .then(() => setData(getLocalData()))
+    }
+    if (!!getLocalData().length) {
+      setData(getLocalData());
+    }
+  }, [])
+  function getLocalData(): Array<any> {
+    const locations = localStorage.getItem('locations');
+    return locations ? JSON.parse(locations) : [];
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <>
+            <BrowserRouter>
+              <Header></Header>
+              <Routes>
+                <Route path='/' element={<Map/>}></Route>
+                <Route path='/table' element={<Table data={data}/>}></Route>
+              </Routes>
+            </BrowserRouter>
+          </>
   );
 }
 

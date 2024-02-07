@@ -8,7 +8,10 @@ import {faTrashCan} from "@fortawesome/free-regular-svg-icons";
 import store from "../store/store";
 import * as actions from "../store/actionTypes";
 
-export function Table() {
+interface Props {
+    data: Array<any>
+}
+export function Table({data}: Props) {
     const [locationsPerPage, setLocationsPerPage] = useState(new Array<any>());
     const [editableArr, setEditableArr] = useState(new Array<any>());
     const [pages, setPages] = useState(new Array<any>());
@@ -24,32 +27,9 @@ export function Table() {
         console.log('store changed', store.getState())
     });
     useEffect(() => {
-        /** Version for non-local response */
-        // getLocations()
-        //     .then(data => {
-        //         const locationsLocalStorage = localStorage.getItem('locations');
-        //
-        //         if (!!locationsLocalStorage) {
-        //             setLocalLocations(JSON.parse(locationsLocalStorage));
-        //             setEditableArr(new Array<any>(JSON.parse(locationsLocalStorage).length).fill(false));
-        //             calculatePagination(locationsLocalStorage)
-        //         }
-        //     })
-
-        /** Version for local response */
-        if (!getLocalData().length) {
-            getLocationsLocal()
-                .then(() => setData(getLocalData()))
-        }
-        if (!!getLocalData().length) {
-            setData(getLocalData());
-        }
+        setData(data);
         unsubscribe();
     }, []);
-    function getLocalData(): Array<any> {
-        const locations = localStorage.getItem('locations');
-        return locations ? JSON.parse(locations) : [];
-    }
     function setData(locationsLocalStorage: Array<any>) {
         locationsLocalStorage = locationsLocalStorage.map((item, index) => {
             item['key'] = index;
@@ -187,6 +167,7 @@ export function Table() {
                                     key={index}
                                     value={location.name}
                                     disabled={!editableArr[index]}
+                                    data-testid={'editable-input'+[index]}
                                     onChange={(e)=> {
                                         updateData(e, 'name', index, location.key)
                                     }}
@@ -227,6 +208,7 @@ export function Table() {
                                     <div className={'table-col last-column'}>
                                     <FontAwesomeIcon
                                         className={'icon-edit'}
+                                        data-testid={'onedit-btn'+[index]}
                                         onClick={() => editData(index, true)}
                                         icon={faPencil} /></div>
                                     :
@@ -241,7 +223,7 @@ export function Table() {
             }
             {
                 isNewItemAdded ?
-                    <div className={'table-row'}>
+                    <div className={'table-row table-row-new'}>
                         <div className={'table-col'}>
                             <input
                                 value={localLocations[localLocations.length - 1].name}
@@ -307,6 +289,7 @@ export function Table() {
             <div className={'action-buttons'}>
                 <button
                     className={'btn-add'}
+                    data-testid={'btn-add'}
                     onClick={addNewItem}
                 >{t('add')}</button>
                 <div className={'btn-items'}>
